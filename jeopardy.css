@@ -1,0 +1,52 @@
+/* some colors you may find useful:
+  #115ff4
+  #060ce9
+  #28a200
+  #8d2ab5
+  #74119c
+*/
+
+
+/* .question {
+    pointer-events: none;
+} */
+
+::selection {
+    background: none;
+}
+
+
+/* .category {
+}
+
+.questions {
+} */
+
+table,
+th,
+td {
+    border: 1px solid black;
+}
+
+td,
+th {
+    padding: 0;
+    width: 100px;
+    height: 100px;
+    border: 3px solid #696969;
+    padding: 1px;
+    /* background-color: #115ff4; */
+}
+
+.clueCell {
+    font-size: 12px;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    width: 100px;
+    height: 100px;
+}
+
+.hidden {
+    display: none;
+}
