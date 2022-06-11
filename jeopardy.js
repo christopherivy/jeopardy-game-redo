@@ -24,9 +24,23 @@ const MAX_QUESTIONS = 100;
 const NUM_CATEGORIES = 6;
 const NUM_QUESTIONS_PER_CAT = 5;
 
+let gameBody = $("#game-body").get()[ 0 ];
+let button = document.getElementById("reset-game");
+let board = document.getElementById("board");
+
+//Add handlers for the body and button
+gameBody.addEventListener("click", function (e) {
+	handleClick(e);
+});
+
+button.addEventListener("click", function (e) {
+	e.preventDefault();
+	setupAndStart();
+});
 
 
-//comment this
+
+//Shuffle the categories
 function shuffle (array) {
 	let currentIndex = array.length, randomIndex;
 
@@ -46,24 +60,27 @@ function shuffle (array) {
 	return array;
 }
 
-/** Get NUM_CATEGORIES random category from API.
- *
- * Returns array of category ids
+/** 
+ *  Gets a random number (NUM_CATEGORIES) categories from the API. 
+ *  Returns: An array of category ids
  */
-
 async function getCategoryIds () {
+
+	//hit the api for a a group of categories
 	let res = await axios.get(`${J_API}/api/categories/?count=${MAX_QUESTIONS}`);
 
-	//array object
+	//shuffle the random categories
 	let categoryIds = res.data.map((category) => category.id);
 	let randomIds = shuffle(categoryIds);
+
 
 	return randomIds.slice(0, NUM_CATEGORIES); //this returns an array [5412, 11496, 11498, 11499, 11504, 11544]
 }
 
-/** Return object with data about a category:
- *
- *  Returns { title: "Math", clues: clue-array }
+/** 
+ *	Gets the data about a category
+ *  Returns: object with category data 
+ *  Example: { title: "Math", clues: clue-array }
  *
  * Where clue-array is:
  *   [
@@ -72,8 +89,9 @@ async function getCategoryIds () {
  *      ...
  *   ]
  */
-
 async function getCategory (catId) {
+
+	//hit the api for data about the category id
 	let res = await axios.get(`${J_API}/api/category?id=${catId}`);
 
 	let category = res.data;
@@ -92,16 +110,24 @@ async function getCategory (catId) {
  *   each with a question for each category in a <td>
  *   (initally, just show a "?" where the question/answer would go.)
  */
-
 async function fillTable () {
+	//get table header and add a row
+	let header = $("#game-header").get()[ 0 ];
+
+	//clear any out existing cards
+	header.innerText = '';
+	gameBody.innerText = '';
+
+
+	//if there is a current board wipe it out
+	header.innerText = '';
+
 	//get cat ids
 	let catIds = await getCategoryIds();
 
-	//get table header and add a row
-	let header = $("#game-header").get()[ 0 ];
-	let headerRow = document.createElement("tr");
 
 	//attaching the headerrow to the header
+	let headerRow = document.createElement("tr");
 	header.append(headerRow);
 
 	//put empty rows in the table body
@@ -169,6 +195,12 @@ async function fillTable () {
 			// console.log(category.title, category.clues[i].question);
 		}
 	}
+
+	//change the start button to a restart button
+	hideLoadingView();
+	button.innerText = "New Game";
+
+
 }
 
 /** Handle clicking on a clue: show the question or answer.
@@ -182,19 +214,15 @@ async function fillTable () {
 function handleClick (evt) {
 	evt.preventDefault();
 
-	if(evt.target.tagName === "TD") return;
+	//if they click in the body without getting a cell, do nothing
+	if(!evt.target.classList.contains("clueCell")) return;
 
-	// if(evt.target.classList.length === 3) return;
+	//if there isnt another layer, do nothing
+	if(evt.target.nextSibling == null || evt.target.nextSibling === undefined) return;
 
-
+	//hide the current layer and show the one underneath
 	evt.target.classList.add("hidden");
-	if(evt.target.nextSibling.classList === undefined) return;
-
-	// console.log(evt.target.nextSibling.classList);
-	console.log(evt.target, 'target');
 	evt.target.nextSibling.classList.remove("hidden");
-
-
 }
 
 /** Wipe the current Jeopardy board, show the loading spinner,
@@ -202,12 +230,19 @@ function handleClick (evt) {
  */
 
 function showLoadingView () {
-
+	//the board should be hidden and a spinner should show	
+	console.log(board);
+	board.classList.add('hidden');
+	$('#loading').removeClass('hidden');
 }
 
 /** Remove the loading spinner and update the button used to fetch data. */
 
-function hideLoadingView () { }
+function hideLoadingView () {
+	//show the board, hide the spinner
+	board.classList.remove('hidden');
+	$('#loading').addClass('hidden');
+}
 
 /** Start game:
  *
@@ -217,30 +252,14 @@ function hideLoadingView () { }
  * */
 
 async function setupAndStart () {
+	showLoadingView();
+
 	//getting random category ids
 	let categoryIds = await getCategoryIds();
 	// console.log(categoryIds);
 
 	//create html table
 	await fillTable();
+
+
 }
-
-/** On click of start / restart button, set up game. */
-
-// TODO
-
-/** On page load, add event handler for clicking clues */
-
-// TODO
-
-//target the body element
-let gameBody = $("#game-body").get()[ 0 ];
-gameBody.addEventListener("click", function (e) {
-	handleClick(e);
-});
-
-let button = document.getElementById("reset-game");
-button.addEventListener("click", function (e) {
-	e.preventDefault();
-	setupAndStart();
-});

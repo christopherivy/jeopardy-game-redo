@@ -11,16 +11,19 @@
 </head>
 
 <body>
+    <div id="loading" class="hidden"></div>
     <button id="reset-game">Start!</button>
-    <table id="jeopardy">
-        <thead id="game-header"></thead>
-        <tbody id="game-body"></tbody>
-    </table>
+    <div id="board">
+        <table id="jeopardy">
+            <thead id="game-header"></thead>
+            <tbody id="game-body"></tbody>
+        </table>
 
-    <script src="https://unpkg.com/jquery"></script>
-    <script src="https://unpkg.com/axios/dist/axios.js"></script>
-    <script src="https://unpkg.com/lodash"></script>
-    <script src="jeopardy.js"></script>
+        <script src="https://unpkg.com/jquery"></script>
+        <script src="https://unpkg.com/axios/dist/axios.js"></script>
+        <script src="https://unpkg.com/lodash"></script>
+        <script src="jeopardy.js"></script>
+    </div>
 </body>
 
 </html>
